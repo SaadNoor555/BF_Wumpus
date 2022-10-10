@@ -173,11 +173,7 @@ class World():
     
     def __addFeatures ( self, file = None ):
         if file == None:
-            # Generate pits
-            for r in range (self.__rowDimension):
-                for c in range (self.__colDimension):
-                    if (c != 0 or r != 0) and self.__randomInt(10) < 2:
-                        self.__addPit ( c, r )
+            
             
             # Generate wumpus
             wc = self.__randomInt(self.__colDimension)
@@ -193,12 +189,18 @@ class World():
             gc = self.__randomInt(self.__colDimension)
             gr = self.__randomInt(self.__rowDimension)
                 
-            while gc == 0 and gr == 0:
+            while ((gc == 0 and gr == 0) and (self.__board[gc][gr].wumpus == True)):
                 gc = self.__randomInt(self.__colDimension)
                 gr = self.__randomInt(self.__rowDimension)
             
             self.__addGold ( gc, gr )
             
+            # Generate pits
+            for r in range (self.__rowDimension):
+                for c in range (self.__colDimension):
+                    if (c != 0 or r != 0) and self.__randomInt(10) < 2 and (self.__board[gc][gr].wumpus == False) and (self.__board[gc][gr].gold == False):
+                        self.__addPit ( c, r )
+
         else:
             # Add the Wumpus
             c, r = [int(x) for x in next(file).split()]
