@@ -14,6 +14,7 @@ from ManualAI import ManualAI
 from RandomAI import RandomAI
 from MyAI_1 import MyAI
 import random
+from wumpus_gui import *
 
 class World():
     
@@ -67,7 +68,11 @@ class World():
     # ===============================================================   
     
     def run ( self ):
+        screen = board_graphics_init()
+        pygame.display.set_caption('wumpus world')
+        refresh_screen(self.__board, screen)
         while self.__score >= -1000:
+            refresh_screen(self.__board, screen)
             if self.__debug or self.__manualAI:
                 self.__printWorldInfo()
                 
