@@ -57,8 +57,8 @@ class World():
             self.__board = [[self.__Tile() for j in range(self.__rowDimension)] for i in range(self.__colDimension)]
             self.__addFeatures(file)
         else:
-            self.__colDimension = 4
-            self.__rowDimension = 4
+            self.__colDimension = 10
+            self.__rowDimension = 10
             self.__board = [[self.__Tile() for j in range(self.__colDimension)] for i in range(self.__rowDimension)]
             self.__addFeatures()
     
@@ -198,7 +198,7 @@ class World():
             # Generate pits
             for r in range (self.__rowDimension):
                 for c in range (self.__colDimension):
-                    if (c != 0 or r != 0) and self.__randomInt(10) < 2 and (self.__board[gc][gr].wumpus == False) and (self.__board[gc][gr].gold == False):
+                    if (c != 0 or r != 0) and self.__randomInt(50) < 2 and (self.__board[c][r].wumpus == False) and (self.__board[c][r].gold == False):
                         self.__addPit ( c, r )
 
         else:
