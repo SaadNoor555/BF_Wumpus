@@ -10,38 +10,49 @@ YELLOW = (255, 255, 0)
 BLACK = (0, 0, 0)
 BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
+DARKSEAGREEN = (143, 188, 143)
+MEDIUMSEAGREEN = (0, 250, 154)
 
 RADIUS = 0.45*SQUARE_LEN
 
 def board_graphics_init():
     pygame.init()
     board_width = B_R * SQUARE_LEN
-    board_height = (B_C+1) * SQUARE_LEN
+    board_height = (B_C) * SQUARE_LEN
     screen = pygame.display.set_mode((board_width, board_height))
     return screen
 
 def refresh_screen(board, screen):
-    wump_img = pygame.image.load("icons/wumpus.png").convert()
-    wump_img = pygame.transform.rotozoom(wump_img, 0, 0.25)
-    pit_img = pygame.image.load("icons/pit.png").convert()
-    pit_img = pygame.transform.rotozoom(pit_img, 0, 0.1)
-    gold_img = pygame.image.load("icons/gold.png").convert()
-    gold_img = pygame.transform.rotozoom(gold_img, 0, 0.1)
-    bg_img = pygame.image.load("icons/bg.jpg").convert()
-    bg_img = pygame.transform.rotozoom(bg_img, 0, 0.1)
-    # screen.blit(gold_img, (0, 0)) 
-    img = bg_img
+    # for c in range(B_C):
+    #     for r in range(B_R):
+    #         board[c][r], board[B_C-c-1][B_R-r-1] = board[B_C-c-1][B_R-r-1], board[c][r]
+    # for c in range(B_C):
+    #     board[c], board[B_C-c-1] = board[B_C-c-1], board[c]
+    font = pygame.font.Font(None, 30)
+    info = ''
+    color = DARKSEAGREEN
     for col in range(B_C):
         for row in range(B_R):
-            pygame.draw.rect(screen, BLUE, (col*SQUARE_LEN, row*SQUARE_LEN+SQUARE_LEN, SQUARE_LEN, SQUARE_LEN))
-            if board[col][row].gold == True:
-                img = gold_img
-            elif board[col][row].pit == True:
-                img = pit_img
-            elif board[col][row].wumpus == True:
-                img = wump_img
-            screen.blit(img, (int(col*SQUARE_LEN), int(row*SQUARE_LEN+SQUARE_LEN))) 
-            img = bg_img
+            if board[col][row].visited:
+                color = MEDIUMSEAGREEN
+            if board[col][row].wumpus:
+                info += 'W'
+            if board[col][row].pit:
+                info += 'P'
+            if board[col][row].gold:
+                info += 'G'
+            if board[col][row].breeze:
+                info += 'B'
+            if board[col][row].stench:
+                info += 'S'
+            pygame.draw.rect(screen, color, (col*SQUARE_LEN, row*SQUARE_LEN, SQUARE_LEN-2, SQUARE_LEN-2))
+            
+            text = font.render(info, True, (WHITE))
+            text_rect = text.get_rect(center=(col*SQUARE_LEN+SQUARE_LEN//2, row*SQUARE_LEN+SQUARE_LEN//2))
+            screen.blit(text, text_rect)
+            info = '' 
+            color = DARKSEAGREEN
+                
     pygame.display.update() 
 
 # def draw(screen):

@@ -20,11 +20,12 @@ class World():
     
     # Tile Structure
     class __Tile:
-        pit    = False;
-        wumpus = False;
-        gold   = False;
-        breeze = False;
-        stench = False;
+        visited = False
+        pit     = False
+        wumpus  = False
+        gold    = False
+        breeze  = False
+        stench  = False
     
     # ===============================================================
     # =                 Constructor
@@ -62,7 +63,9 @@ class World():
             self.__rowDimension = 10
             self.__board = [[self.__Tile() for j in range(self.__colDimension)] for i in range(self.__rowDimension)]
             self.__addFeatures()
-    
+
+        perceived_board = [["" for j in range(self.__colDimension)] for i in range(self.__rowDimension)]
+
     # ===============================================================
     # =                 Engine Function
     # ===============================================================   
