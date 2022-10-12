@@ -9,17 +9,20 @@
 # NOTES:       - Don't make changes to this file.
 # ======================================================================
 
+from xml.dom import NotFoundErr
 from Agent import Agent
 from ManualAI import ManualAI
 from RandomAI import RandomAI
 from MyAI_1 import MyAI
 import random
 from wumpus_gui import *
+import time
 
 class World():
     
     # Tile Structure
     class __Tile:
+        agent   = False
         visited = False
         pit     = False
         wumpus  = False
@@ -46,7 +49,8 @@ class World():
         self.__agentX       = 0
         self.__agentY       = 0
         self.__lastAction   = Agent.Action.CLIMB
-        
+        self.__board        = NotFoundErr
+
         if randomAI:
             self.__agent = RandomAI()
         elif manualAI:
@@ -71,18 +75,22 @@ class World():
     # ===============================================================   
     
     def run ( self ):
+        self.__board[self.__agentX][self.__agentY].agent = True
+        self.__board[self.__agentX][self.__agentY].visited = True
         screen = board_graphics_init()
         pygame.display.set_caption('wumpus world')
-        refresh_screen(self.__board, screen)
+        # refresh_screen(self, screen)
         while self.__score >= -1000:
             refresh_screen(self.__board, screen)
+            self.__board[self.__agentX][self.__agentY].agent = False
             if self.__debug or self.__manualAI:
                 self.__printWorldInfo()
                 
                 if not self.__manualAI:
                     # Pause the game, only if manualAI isn't on
                     # because manualAI pauses for us
-                    input("Press ENTER to continue...")
+                    time.sleep(1)
+                    # input("Press ENTER to continue...")
                         
             # Get the move
             self.__lastAction = self.__agent.getAction (
@@ -174,6 +182,7 @@ class World():
                         self.__printWorldInfo()
                     return self.__score;
             self.__board[self.__agentX][self.__agentY].visited = True;
+            self.__board[self.__agentX][self.__agentY].agent = True
         return self.__score
         
     # ===============================================================
