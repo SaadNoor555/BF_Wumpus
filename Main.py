@@ -91,6 +91,7 @@ def Check_Directories():
         return []
 
 def Check_Create_Tournament(val):
+    return False
     while True:
         if not val:
             response = input("No tournament sets detected. Would you like to generate set of 10,000? (y/n)\n")
