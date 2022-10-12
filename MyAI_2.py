@@ -247,8 +247,12 @@ class MyAI ( Agent ):
         elif self.__revert_home == True:
             print("**********Revert HOME********")
             if not self.__has_gold:
-                rai = RandomAI()
-                return rai.getAction(stench, breeze, glitter, bump, scream)
+            #     rai = RandomAI()
+            #     return rai.getAction(stench, breeze, glitter, bump, scream)
+                self.__isInLoop = True
+                self.__revert_home = False
+                return self.__go_to_dest(self,stench, breeze, glitter, bump, scream, self.getloopbreakingnode())
+
             else:
                 destination = Node(1,1)
                 return self.__go_to_dest(self,stench, breeze, glitter, bump, scream, destination)
@@ -276,9 +280,9 @@ class MyAI ( Agent ):
         if len(self.__path_home) == 0:
             self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,destination[0],destination[1])
             self.__stop_iteration = False
-        elif self.__x_tile == 1 and self.__y_tile == 1:
-            self.__move_history.append("CLIMB")
-            return Agent.Action.CLIMB
+        # elif self.__x_tile == 1 and self.__y_tile == 1:
+        #     self.__move_history.append("CLIMB")
+        #     return Agent.Action.CLIMB
         curNode = self.Node(self.__x_tile,self.__y_tile)
         index = 0
         for i in range(len(self.__path_home)):
@@ -288,7 +292,7 @@ class MyAI ( Agent ):
         try:
             nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
         except:
-            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,1,1)
+            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,destination[0],destination[1])
             self.__stop_iteration = False
             curNode = self.Node(self.__x_tile,self.__y_tile)
             index = 0
@@ -299,6 +303,10 @@ class MyAI ( Agent ):
             nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
         self.__print_debug_info(stench, breeze, glitter, bump, scream)
         return self.__NodeToNode(nextNode,curNode)
+
+    # def getloopbreakingnode(self,stench, breeze, glitter, bump, scream, destination): 
+    #     for i in range(len(self.__safe_tiles)):
+            
 
     def __Update_Potential_Pit_Locations(self):
         if (self.__x_tile,self.__y_tile) in self.__breeze_nodes:
