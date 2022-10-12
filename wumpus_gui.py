@@ -1,5 +1,6 @@
 import pygame
 import World
+import time
 
 B_R, B_C = 10, 10
 SQUARE_LEN = 60
@@ -18,16 +19,15 @@ RADIUS = 0.45*SQUARE_LEN
 def board_graphics_init():
     pygame.init()
     board_width = B_R * SQUARE_LEN
-    board_height = (B_C) * SQUARE_LEN
+    board_height = (B_C+1) * SQUARE_LEN
     screen = pygame.display.set_mode((board_width, board_height))
     return screen
 
-def refresh_graphics(board, dir, screen):
-    font = pygame.font.Font(None, 30)
-    info = ''
+def refresh_graphics(board, dir, show_board, screen):
+    
     for c in range(B_C):
         board[c], board[B_C-c-1] = board[B_C-c-1], board[c]
-
+    ''' Icons '''
     bg_img = pygame.image.load('icons/bg.jpg')
     icon_size = (SQUARE_LEN-1, SQUARE_LEN-1)
     bg_img = pygame.transform.scale(bg_img, icon_size)
@@ -62,51 +62,36 @@ def refresh_graphics(board, dir, screen):
     alt_bg_img = pygame.image.load('icons/bg1.png')
     alt_bg_img = pygame.transform.scale(alt_bg_img, icon_size)
 
-    color = MEDIUMSEAGREEN
     for col in range(B_C):
         for row in range(B_R):
-            pos = (col*SQUARE_LEN, B_R*SQUARE_LEN - row*SQUARE_LEN-SQUARE_LEN)
+            pos = (col*SQUARE_LEN, B_R*SQUARE_LEN - row*SQUARE_LEN)
             screen.blit(bg_img, pos)
             
             if board[col][row].agent:
                 player_img = player_right
                 if dir == 0:
                     player_img = player_right
-                    # info += '>'
                 elif dir == 1:
                     player_img = player_down
-                    # info += 'v'
                 elif dir == 2:
                     player_img = player_left
-                    # info += '<'
                 elif dir == 3:
                     player_img = player_up
-                    # info += '^'
                 screen.blit(player_img, pos)
             if board[col][row].wumpus:
                 screen.blit(wump_img, pos)
             if board[col][row].pit:
                 screen.blit(pit_img, pos)
-                # info += 'P'
             if board[col][row].gold:
                 screen.blit(gold_img, pos)
-                # info += 'G'
             if board[col][row].breeze:
                 screen.blit(breeze_img, pos)
-                # info += 'B'
             if board[col][row].stench:
                 screen.blit(stench_img, pos)
-                # info += 'S'
             
-            if not board[col][row].visited:
+            if not board[col][row].visited and not show_board:
                 screen.blit(alt_bg_img, pos)
-            # pygame.draw.rect(screen, color, (col*SQUARE_LEN, B_R*SQUARE_LEN - row*SQUARE_LEN-SQUARE_LEN, SQUARE_LEN-2, SQUARE_LEN-2))
-            
-            text = font.render(info, True, (BLACK))
-            text_rect = text.get_rect(center=(col*SQUARE_LEN+SQUARE_LEN//2, B_R*SQUARE_LEN-SQUARE_LEN - row*SQUARE_LEN+SQUARE_LEN//2))
-            screen.blit(text, text_rect)
-            info = '' 
-            color = MEDIUMSEAGREEN
+
                 
     pygame.display.update()
     pass

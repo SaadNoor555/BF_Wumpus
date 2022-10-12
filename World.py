@@ -80,8 +80,23 @@ class World():
         screen = board_graphics_init()
         pygame.display.set_caption('wumpus world')
         # refresh_screen(self, screen)
+        wait_flag = False
+        show_board = False
         while self.__score >= -1000:
-            refresh_graphics(self.__board, self.__agentDir, screen)
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        print('Space bar is pressed')
+                        wait_flag = not wait_flag
+                    if event.key == pygame.K_ESCAPE:
+                        pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    show_board = not show_board
+
+            if wait_flag:
+                time.sleep(1)
+                continue
+            refresh_graphics(self.__board, self.__agentDir, show_board, screen)
             self.__board[self.__agentX][self.__agentY].agent = False
             if self.__debug or self.__manualAI:
                 self.__printWorldInfo()
@@ -183,6 +198,7 @@ class World():
                     return self.__score;
             self.__board[self.__agentX][self.__agentY].visited = True;
             self.__board[self.__agentX][self.__agentY].agent = True
+        pygame.quit()
         return self.__score
         
     # ===============================================================
