@@ -81,7 +81,7 @@ class World():
         pygame.display.set_caption('wumpus world')
         # refresh_screen(self, screen)
         while self.__score >= -1000:
-            refresh_screen(self.__board, screen)
+            refresh_screen(self.__board, self.__agentDir, screen)
             self.__board[self.__agentX][self.__agentY].agent = False
             if self.__debug or self.__manualAI:
                 self.__printWorldInfo()

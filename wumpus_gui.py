@@ -22,22 +22,28 @@ def board_graphics_init():
     screen = pygame.display.set_mode((board_width, board_height))
     return screen
 
-def refresh_screen(board, screen):
+def refresh_screen(board, dir, screen):
     # for c in range(B_C):
     #     for r in range(B_R):
     #         board[c][r], board[B_C-c-1][B_R-r-1] = board[B_C-c-1][B_R-r-1], board[c][r]
-    # for c in range(B_C):
-    #     board[c], board[B_C-c-1] = board[B_C-c-1], board[c]
+    for c in range(B_C):
+        board[c], board[B_C-c-1] = board[B_C-c-1], board[c]
     font = pygame.font.Font(None, 30)
     info = ''
     color = MEDIUMSEAGREEN
     for col in range(B_C):
         for row in range(B_R):
-            
             if board[col][row].visited:
                 color = DARKSEAGREEN
             if board[col][row].agent:
-                info += 'A'
+                if dir == 0:
+                    info += '>'
+                elif dir == 1:
+                    info += 'v'
+                elif dir == 2:
+                    info += '<'
+                elif dir == 3:
+                    info += '^'
             if board[col][row].wumpus:
                 info += 'W'
             if board[col][row].pit:
@@ -48,10 +54,10 @@ def refresh_screen(board, screen):
                 info += 'B'
             if board[col][row].stench:
                 info += 'S'
-            pygame.draw.rect(screen, color, (col*SQUARE_LEN, row*SQUARE_LEN, SQUARE_LEN-2, SQUARE_LEN-2))
+            pygame.draw.rect(screen, color, (col*SQUARE_LEN, B_R*SQUARE_LEN - row*SQUARE_LEN-SQUARE_LEN, SQUARE_LEN-2, SQUARE_LEN-2))
             
             text = font.render(info, True, (BLACK))
-            text_rect = text.get_rect(center=(col*SQUARE_LEN+SQUARE_LEN//2, row*SQUARE_LEN+SQUARE_LEN//2))
+            text_rect = text.get_rect(center=(col*SQUARE_LEN+SQUARE_LEN//2, B_R*SQUARE_LEN-SQUARE_LEN - row*SQUARE_LEN+SQUARE_LEN//2))
             screen.blit(text, text_rect)
             info = '' 
             color = MEDIUMSEAGREEN
