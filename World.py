@@ -173,6 +173,7 @@ class World():
                     if (self.__debug):
                         self.__printWorldInfo()
                     return self.__score;
+            self.__board[self.__agentX][self.__agentY].visited = True;
         return self.__score
         
     # ===============================================================

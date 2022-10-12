@@ -242,7 +242,9 @@ class MyAI ( Agent ):
             self.__shot_arrow = True
             self.__print_debug_info(stench, breeze, glitter, bump, scream)
             return Agent.Action.SHOOT
+
         elif self.__revert_home == True:
+            print("**********Revert HOME********")
             if not self.__has_gold:
                 rai = RandomAI()
                 return rai.getAction(stench, breeze, glitter, bump, scream)
@@ -272,6 +274,7 @@ class MyAI ( Agent ):
                 nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
             self.__print_debug_info(stench, breeze, glitter, bump, scream)
             return self.__NodeToNode(nextNode,curNode)
+
         if self.__dest_node[0] == self.__x_tile and self.__dest_node[1] == self.__y_tile:
             self.__dest_node = (self.__dest_node[0] + (self.__dir_to_coordinate(self.__dir)[0]),
                                 self.__dest_node[1] + (self.__dir_to_coordinate(self.__dir)[1]))
@@ -356,7 +359,6 @@ class MyAI ( Agent ):
                     break
                 
     def __UpdateSafeTiles(self):
-            
         if (self.__x_tile,self.__y_tile) not in self.__safe_tiles:
             self.__safe_tiles.append((self.__x_tile,self.__y_tile))
             if (self.__x_tile,self.__y_tile) in self.__potential_wump_nodes:
@@ -522,6 +524,7 @@ class MyAI ( Agent ):
     def __optimal_home_path(self,x,y, x_target,y_target):
         '''Returns Optimal Path'''
         Path = self.__potential_path(x,y,[], x_target,y_target, 0)
+        print(Path)
         if Path[-1][0] != x_target or Path[-1][1] != y_target:
             self.__dest_node = (Path[-1][0],Path[-1][1])
         return Path
@@ -543,7 +546,7 @@ class MyAI ( Agent ):
             return explored
         elif node.getCurrent() in explored:
             return explored
-        elif iteration >= 15:
+        elif iteration >= 35:
             return explored
         else:
             explored.append(node.getCurrent())
