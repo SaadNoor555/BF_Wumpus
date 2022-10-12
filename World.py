@@ -17,6 +17,7 @@ from MyAI import MyAI
 import random
 from wumpus_gui import *
 import time
+import sys
 
 class World():
     
@@ -50,7 +51,8 @@ class World():
         self.__agentY       = 0
         self.__lastAction   = Agent.Action.CLIMB
         self.__board        = NotFoundErr
-
+        self.__colDimension = 10
+        self.__rowDimension = 10
         if randomAI:
             self.__agent = RandomAI()
         elif manualAI:
@@ -59,12 +61,11 @@ class World():
             self.__agent = MyAI()
             
         if file != None:
-            self.__colDimension, self.__rowDimension = [int(x) for x in next(file).split()]
+            # self.__colDimension, self.__rowDimension = [int(x) for x in next(file).split()]
             self.__board = [[self.__Tile() for j in range(self.__rowDimension)] for i in range(self.__colDimension)]
             self.__addFeatures(file)
         else:
-            self.__colDimension = 10
-            self.__rowDimension = 10
+            
             self.__board = [[self.__Tile() for j in range(self.__colDimension)] for i in range(self.__rowDimension)]
             self.__addFeatures()
 
@@ -74,16 +75,17 @@ class World():
     # =                 Engine Function
     # ===============================================================   
     
-    def run ( self ):
+    def run ( self, screen ):
         self.__board[self.__agentX][self.__agentY].agent = True
         self.__board[self.__agentX][self.__agentY].visited = True
-        screen = board_graphics_init()
-        pygame.display.set_caption('wumpus world')
+
         # refresh_screen(self, screen)
         wait_flag = False
         show_board = False
         while self.__score >= -1000:
             for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         print('Space bar is pressed')
@@ -198,7 +200,7 @@ class World():
                     return self.__score;
             self.__board[self.__agentX][self.__agentY].visited = True;
             self.__board[self.__agentX][self.__agentY].agent = True
-        pygame.quit()
+        
         return self.__score
         
     # ===============================================================
@@ -237,6 +239,7 @@ class World():
 
         else:
             # Add the Wumpus
+            # print(next(file))
             c, r = [int(x) for x in next(file).split()]
             self.__addWumpus ( c, r )
             

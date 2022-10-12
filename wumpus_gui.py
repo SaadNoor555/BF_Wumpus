@@ -1,6 +1,4 @@
 import pygame
-import World
-import time
 
 B_R, B_C = 10, 10
 SQUARE_LEN = 60
@@ -24,7 +22,7 @@ def board_graphics_init():
     return screen
 
 def refresh_graphics(board, dir, show_board, screen):
-    
+    screen.fill((0, 0, 0))
     for c in range(B_C):
         board[c], board[B_C-c-1] = board[B_C-c-1], board[c]
     ''' Icons '''
@@ -95,6 +93,42 @@ def refresh_graphics(board, dir, show_board, screen):
                 
     pygame.display.update()
     pass
+
+def menu_gui(screen):
+    # screen = board_graphics_init()
+    font = pygame.font.Font(None, 80)
+    text = font.render('New Game', True, (WHITE))
+    text_rect = text.get_rect(center=(B_C*SQUARE_LEN//2, B_R*SQUARE_LEN//3))
+    screen.blit(text, text_rect)
+    
+    text = font.render('Custom Game', True, (WHITE))
+    text_rect = text.get_rect(center=(B_C*SQUARE_LEN//2, B_R*SQUARE_LEN//3+80))
+    screen.blit(text, text_rect)
+
+    text = font.render('Settings', True, (WHITE))
+    text_rect = text.get_rect(center=(B_C*SQUARE_LEN//2, B_R*SQUARE_LEN//3+160))
+    screen.blit(text, text_rect)
+
+    pygame.display.update()
+
+def main_menu(screen):
+    menu_gui(screen)
+    # mouse = pygame.mouse.get_pos()
+    while True:  
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            # For events that occur upon clicking the mouse (left click) 
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                print(event.pos)
+                print(B_C*SQUARE_LEN, B_R*SQUARE_LEN)
+                w_pad, h_pad = 100, 50
+                if (B_C*SQUARE_LEN//2)-w_pad <= event.pos[0] <= (B_C*SQUARE_LEN//2)+w_pad and (B_R*SQUARE_LEN//3)-h_pad <= event.pos[1] <= (B_R*SQUARE_LEN//3)+h_pad:
+                    return 1
+                elif (B_C*SQUARE_LEN//2)-w_pad <= event.pos[0] <= (B_C*SQUARE_LEN//2)+w_pad and (B_R*SQUARE_LEN//3+80)-h_pad <= event.pos[1] <= (B_R*SQUARE_LEN//3+80)+h_pad:
+                    return 2
+                elif (B_C*SQUARE_LEN//2)-w_pad <= event.pos[0] <= (B_C*SQUARE_LEN//2)+w_pad and (B_R*SQUARE_LEN//3+160)-h_pad <= event.pos[1] <= (B_R*SQUARE_LEN//3+160)+h_pad:
+                    return 3
 
 
 def refresh_screen(board, dir, screen):
