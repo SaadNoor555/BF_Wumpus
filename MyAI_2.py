@@ -17,9 +17,9 @@
 #                be lost when the tournament runs your code.
 # ======================================================================
 
+from lib2to3.pytree import Node
 from Agent import Agent
 from RandomAI import RandomAI
-
 
 class MyAI ( Agent ):
 
@@ -57,11 +57,13 @@ class MyAI ( Agent ):
         self.__potential_pit_nodes = []
         self.__breeze_nodes = []
         self.__shot_arrow = False
+        self.__isInLoop = False
         pass
         # ======================================================================
         # YOUR CODE ENDS
         # ======================================================================
-    
+    def getHome(self):
+        return self.__revert_home
     def getAction( self, stench, breeze, glitter, bump, scream ):
         # ======================================================================
         # YOUR CODE BEGINS
@@ -136,6 +138,7 @@ class MyAI ( Agent ):
         return self.__NodeToNode(nextNode,curNode)
         
     def __determineAction(self,stench, breeze, glitter, bump, scream ):
+
         if scream:
             if self.__wump_node == (0,0):
                 self.__wump_node = (2,1)
@@ -153,6 +156,7 @@ class MyAI ( Agent ):
                     found_node = True
                     break
             if not found_node:
+                print('loop156')
                 self.__revert_home = True
             else:
                 self.__revert_home = False
@@ -171,6 +175,7 @@ class MyAI ( Agent ):
                     found_node = True
                     break
             if not found_node:
+                print('loop175')
                 self.__revert_home = True
             else:
                 self.__revert_home = False
@@ -213,12 +218,14 @@ class MyAI ( Agent ):
                 self.__in_danger = True
                 self.__last_danger = (self.__x_tile,self.__y_tile)
                 if not found_node:
+                    print('loop217')
                     self.__revert_home = True
         else:
             self.__in_danger = False
         if not self.__revert_home:
             if self.__moves > 1:
                 if self.__getExploredAllSafeNodes():
+                    print('loop225')
                     self.__revert_home = True
         if glitter == True: #Glitter Check
             self.__has_gold = True
@@ -236,33 +243,17 @@ class MyAI ( Agent ):
             self.__shot_arrow = True
             self.__print_debug_info(stench, breeze, glitter, bump, scream)
             return Agent.Action.SHOOT
+
         elif self.__revert_home == True:
-            if len(self.__path_home) == 0:
-                self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,1,1)
-                self.__stop_iteration = False
-            elif self.__x_tile == 1 and self.__y_tile == 1:
-                self.__move_history.append("CLIMB")
-                return Agent.Action.CLIMB
-            curNode = self.Node(self.__x_tile,self.__y_tile)
-            index = 0
-            for i in range(len(self.__path_home)):
-                if self.__path_home[i] == curNode.getCurrent():
-                    index = i
-                    break
-            try:
-                nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
-            except:
-                self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,1,1)
-                self.__stop_iteration = False
-                curNode = self.Node(self.__x_tile,self.__y_tile)
-                index = 0
-                for i in range(len(self.__path_home)):
-                    if self.__path_home[i] == curNode.getCurrent():
-                        index = i
-                        break
-                nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
-            self.__print_debug_info(stench, breeze, glitter, bump, scream)
-            return self.__NodeToNode(nextNode,curNode)
+            print("**********Revert HOME********")
+            if not self.__has_gold:
+                rai = RandomAI()
+                return rai.getAction(stench, breeze, glitter, bump, scream)
+            else:
+                destination = Node(1,1)
+                return self.__go_to_dest(self,stench, breeze, glitter, bump, scream, destination)
+            
+
         if self.__dest_node[0] == self.__x_tile and self.__dest_node[1] == self.__y_tile:
             self.__dest_node = (self.__dest_node[0] + (self.__dir_to_coordinate(self.__dir)[0]),
                                 self.__dest_node[1] + (self.__dir_to_coordinate(self.__dir)[1]))
@@ -279,6 +270,35 @@ class MyAI ( Agent ):
             nextNode = self.Node(self.__dest_path[index+1][0],self.__dest_path[index+1][1])
             self.__print_debug_info(stench, breeze, glitter, bump, scream)
             return self.__NodeToNode(nextNode,curNode)
+
+
+    def __go_to_dest(self,stench, breeze, glitter, bump, scream, destination):
+        if len(self.__path_home) == 0:
+            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,destination[0],destination[1])
+            self.__stop_iteration = False
+        elif self.__x_tile == 1 and self.__y_tile == 1:
+            self.__move_history.append("CLIMB")
+            return Agent.Action.CLIMB
+        curNode = self.Node(self.__x_tile,self.__y_tile)
+        index = 0
+        for i in range(len(self.__path_home)):
+            if self.__path_home[i] == curNode.getCurrent():
+                index = i
+                break
+        try:
+            nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
+        except:
+            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,1,1)
+            self.__stop_iteration = False
+            curNode = self.Node(self.__x_tile,self.__y_tile)
+            index = 0
+            for i in range(len(self.__path_home)):
+                if self.__path_home[i] == curNode.getCurrent():
+                    index = i
+                    break
+            nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
+        self.__print_debug_info(stench, breeze, glitter, bump, scream)
+        return self.__NodeToNode(nextNode,curNode)
 
     def __Update_Potential_Pit_Locations(self):
         if (self.__x_tile,self.__y_tile) in self.__breeze_nodes:
@@ -347,7 +367,6 @@ class MyAI ( Agent ):
                     break
                 
     def __UpdateSafeTiles(self):
-            
         if (self.__x_tile,self.__y_tile) not in self.__safe_tiles:
             self.__safe_tiles.append((self.__x_tile,self.__y_tile))
             if (self.__x_tile,self.__y_tile) in self.__potential_wump_nodes:
@@ -513,6 +532,7 @@ class MyAI ( Agent ):
     def __optimal_home_path(self,x,y, x_target,y_target):
         '''Returns Optimal Path'''
         Path = self.__potential_path(x,y,[], x_target,y_target, 0)
+        print(Path)
         if Path[-1][0] != x_target or Path[-1][1] != y_target:
             self.__dest_node = (Path[-1][0],Path[-1][1])
         return Path
@@ -534,7 +554,7 @@ class MyAI ( Agent ):
             return explored
         elif node.getCurrent() in explored:
             return explored
-        elif iteration >= 15:
+        elif iteration >= 35:
             return explored
         else:
             explored.append(node.getCurrent())

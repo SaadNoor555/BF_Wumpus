@@ -13,7 +13,7 @@ from xml.dom import NotFoundErr
 from Agent import Agent
 from ManualAI import ManualAI
 from RandomAI import RandomAI
-from MyAI_1 import MyAI
+from MyAI import MyAI
 import random
 from wumpus_gui import *
 import time
@@ -100,7 +100,7 @@ class World():
 														self.__bump,
 														self.__scream
 													   )
-            print(self.__agent.getHome())
+            # print(self.__agent.getHome())
 
             # Make the move
             self.__score -= 1;
