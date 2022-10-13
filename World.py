@@ -96,7 +96,7 @@ class World():
                     show_board = not show_board
 
             if wait_flag:
-                time.sleep(1)
+                time.sleep(0.5)
                 continue
             refresh_graphics(self.__board, self.__agentDir, show_board, screen)
             self.__board[self.__agentX][self.__agentY].agent = False
@@ -106,7 +106,7 @@ class World():
                 if not self.__manualAI:
                     # Pause the game, only if manualAI isn't on
                     # because manualAI pauses for us
-                    time.sleep(1)
+                    time.sleep(0.5)
                     # input("Press ENTER to continue...")
                         
             # Get the move
