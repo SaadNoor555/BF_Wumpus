@@ -13,7 +13,7 @@ from xml.dom import NotFoundErr
 from Agent import Agent
 from ManualAI import ManualAI
 from RandomAI import RandomAI
-from MyAI import MyAI
+from MyAI_2 import MyAI
 import random
 from wumpus_gui import *
 import time
@@ -234,7 +234,7 @@ class World():
             # Generate pits
             for r in range (self.__rowDimension):
                 for c in range (self.__colDimension):
-                    if (c != 0 or r != 0) and self.__randomInt(50) < 2 and (self.__board[c][r].wumpus == False) and (self.__board[c][r].gold == False):
+                    if (c != 0 or r != 0) and self.__randomInt(15) < 2 and (self.__board[c][r].wumpus == False) and (self.__board[c][r].gold == False):
                         self.__addPit ( c, r )
 
         else:

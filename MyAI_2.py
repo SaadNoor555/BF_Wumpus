@@ -1,25 +1,7 @@
-# ======================================================================
-# FILE:        MyAI.py
-#
-# AUTHOR:      Abdullah Younis
-#
-# DESCRIPTION: This file contains your agent class, which you will
-#              implement. You are responsible for implementing the
-#              'getAction' function and any helper methods you feel you
-#              need.
-#
-# NOTES:       - If you are having trouble understanding how the shell
-#                works, look at the other parts of the code, as well as
-#                the documentation.
-#
-#              - You are only allowed to make changes to this portion of
-#                the code. Any changes to other portions of the code will
-#                be lost when the tournament runs your code.
-# ======================================================================
-
-from lib2to3.pytree import Node
+from platform import node
 from Agent import Agent
 from RandomAI import RandomAI
+from world_generator import randomInt
 
 class MyAI ( Agent ):
 
@@ -237,8 +219,9 @@ class MyAI ( Agent ):
             self.__move_history.append("CLIMB")
             return Agent.Action.CLIMB
         elif self.__moves == 1 and breeze == True: #FirstMoveCheck
-            self.__move_history.append("CLIMB")
-            return Agent.Action.CLIMB
+            curNode = self.Node(self.__x_tile,self.__y_tile)
+            nextNode = self.Node(2, 1)
+            return self.__NodeToNode(nextNode,curNode)
         elif self.__moves == 1 and stench == True:
             self.__shot_arrow = True
             self.__print_debug_info(stench, breeze, glitter, bump, scream)
@@ -251,12 +234,16 @@ class MyAI ( Agent ):
             #     return rai.getAction(stench, breeze, glitter, bump, scream)
                 self.__isInLoop = True
                 self.__revert_home = False
-                return self.__go_to_dest(self,stench, breeze, glitter, bump, scream, self.getloopbreakingnode())
+                gotnode = self.getloopbreakingnode(stench, breeze, glitter, bump, scream)
+                return self.__go_to_dest(stench, breeze, glitter, bump, scream, gotnode[0], gotnode[1])
 
             else:
-                destination = Node(1,1)
-                return self.__go_to_dest(self,stench, breeze, glitter, bump, scream, destination)
-            
+                destination = (1,1)
+                return self.__go_to_dest( stench, breeze, glitter, bump, scream, 1,1)
+        elif self.__isInLoop == True: 
+            gotnode = self.getloopbreakingnode(stench, breeze, glitter, bump, scream)
+            return self.__go_to_dest(stench, breeze, glitter, bump, scream, gotnode[0], gotnode[1])
+
 
         if self.__dest_node[0] == self.__x_tile and self.__dest_node[1] == self.__y_tile:
             self.__dest_node = (self.__dest_node[0] + (self.__dir_to_coordinate(self.__dir)[0]),
@@ -276,13 +263,13 @@ class MyAI ( Agent ):
             return self.__NodeToNode(nextNode,curNode)
 
 
-    def __go_to_dest(self,stench, breeze, glitter, bump, scream, destination):
+    def __go_to_dest(self,stench, breeze, glitter, bump, scream, destx, desty):
         if len(self.__path_home) == 0:
-            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,destination[0],destination[1])
+            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,destx,desty)
             self.__stop_iteration = False
-        # elif self.__x_tile == 1 and self.__y_tile == 1:
-        #     self.__move_history.append("CLIMB")
-        #     return Agent.Action.CLIMB
+        elif self.__x_tile == 1 and self.__y_tile == 1:
+            self.__move_history.append("CLIMB")
+            return Agent.Action.CLIMB
         curNode = self.Node(self.__x_tile,self.__y_tile)
         index = 0
         for i in range(len(self.__path_home)):
@@ -292,7 +279,7 @@ class MyAI ( Agent ):
         try:
             nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
         except:
-            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,destination[0],destination[1])
+            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,destx,desty)
             self.__stop_iteration = False
             curNode = self.Node(self.__x_tile,self.__y_tile)
             index = 0
@@ -304,8 +291,40 @@ class MyAI ( Agent ):
         self.__print_debug_info(stench, breeze, glitter, bump, scream)
         return self.__NodeToNode(nextNode,curNode)
 
-    # def getloopbreakingnode(self,stench, breeze, glitter, bump, scream, destination): 
-    #     for i in range(len(self.__safe_tiles)):
+    def getloopbreakingnode(self,stench, breeze, glitter, bump, scream): 
+        possiblenodes = []
+        for i in range(len(self.__tile_history)):
+            nodetile = self.__tile_history[len(self.__tile_history)-i-1]
+            # print("Nodetile: ")
+            # print(nodetile[0])
+            gnode = self.Node(nodetile[0],nodetile[1])
+            # print("Node: ")
+            # print(gnode.getCurrent())
+            # print(gnode.getNorth()[1])
+
+            sidenode = gnode.getWest()
+
+            # print("Sidenode: ")
+            # print(sidenode)
+            
+
+            if sidenode[0]>=1 and sidenode not in self.__tile_history and sidenode not in possiblenodes: #Left
+                possiblenodes.append(sidenode)
+            sidenode = gnode.getEast()
+            if sidenode[0]<=self.__x_border and sidenode not in self.__tile_history and sidenode not in possiblenodes: #Right
+                possiblenodes.append(sidenode)
+            sidenode = gnode.getSouth()
+            if sidenode[1]>=1 and sidenode not in self.__tile_history and sidenode not in possiblenodes: #down
+                possiblenodes.append(sidenode)
+            sidenode = gnode.getNorth()
+            if sidenode[1]<=self.__y_border and sidenode not in self.__tile_history and sidenode not in possiblenodes: #Left
+                possiblenodes.append(sidenode)
+        print("Possible Nodes:  ")
+        print(possiblenodes)
+        size = len(possiblenodes)
+        rand = randomInt(size)
+        print(possiblenodes[rand])
+        return possiblenodes[rand]
             
 
     def __Update_Potential_Pit_Locations(self):
@@ -540,6 +559,7 @@ class MyAI ( Agent ):
     def __optimal_home_path(self,x,y, x_target,y_target):
         '''Returns Optimal Path'''
         Path = self.__potential_path(x,y,[], x_target,y_target, 0)
+        print("Path to (", x_target, y_target, "): ")
         print(Path)
         if Path[-1][0] != x_target or Path[-1][1] != y_target:
             self.__dest_node = (Path[-1][0],Path[-1][1])
@@ -562,7 +582,7 @@ class MyAI ( Agent ):
             return explored
         elif node.getCurrent() in explored:
             return explored
-        elif iteration >= 35:
+        elif iteration >= 15:
             return explored
         else:
             explored.append(node.getCurrent())
