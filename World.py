@@ -172,11 +172,12 @@ class World():
                     elif self.__agentDir == 1:
                         for y in range (self.__agentY, -1, -1):
                             if self.__board[self.__agentX][y].wumpus:
-                                self.__board[x][self.__agentY].wumpus = False
-                                self.__board[x-1][self.__agentY].stench = False
-                                self.__board[x+1][self.__agentY].stench = False
-                                self.__board[x][self.__agentY+1].stench = False
-                                self.__board[x][self.__agentY-1].stench = False
+                                self.__board[self.__agentX][y].wumpus = False
+
+                                self.__board[self.__agentX-1][y].stench = False
+                                self.__board[self.__agentX+1][y].stench = False
+                                self.__board[self.__agentX][y+1].stench = False
+                                self.__board[self.__agentX][y-1].stench = False
                                 self.__scream = True
                     
                     elif self.__agentDir == 2:
@@ -192,11 +193,12 @@ class World():
                     elif self.__agentDir == 3:
                         for y in range (self.__agentY, self.__rowDimension):
                             if self.__board[self.__agentX][y].wumpus:
-                                self.__board[x][self.__agentY].wumpus = False
-                                self.__board[x-1][self.__agentY].stench = False
-                                self.__board[x+1][self.__agentY].stench = False
-                                self.__board[x][self.__agentY+1].stench = False
-                                self.__board[x][self.__agentY-1].stench = False
+                                self.__board[self.__agentX][y].wumpus = False
+
+                                self.__board[self.__agentX-1][y].stench = False
+                                self.__board[self.__agentX+1][y].stench = False
+                                self.__board[self.__agentX][y+1].stench = False
+                                self.__board[self.__agentX][y-1].stench = False
                                 self.__scream = True
                     
             elif self.__lastAction == Agent.Action.GRAB:

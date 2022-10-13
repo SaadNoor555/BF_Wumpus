@@ -449,12 +449,62 @@ class MyAI ( Agent ):
                 break
             else:
                 self.__potential_wump_nodes.append(node)
+                
+        for node in self.__stench_nodes:
+            if(self.stench_wump_check(node) == True):
+                self.__found_wump = True
+                break
+        
+
         if self.__found_wump and not self.__pitless_wump:
             # for node in self.__stench_nodes:
             #     if node not in self.__breeze_nodes:
             #         self.__pitless_wump = True
             #         break
             self.__pitless_wump = True
+
+    def stench_wump_check(self, node):
+
+        x = node[0]
+        y = node[1]
+        if (x-1>=1 and y+1<=self.__y_border): #leftup
+            leftup = (x-1,y+1)
+            if leftup in self.__stench_nodes: 
+                if((x-1, y) in self.__safe_tiles):
+                    self.__wump_node = (x,y+1)
+                    return True
+                elif((x, y+1) in self.__safe_tiles):
+                    self.__wump_node = (x-1,y)
+                    return True
+        if (x-1>=1 and y-1>=1): #leftdown
+            leftdown = (x-1,y-1)
+            if leftdown in self.__stench_nodes: 
+                if((x-1, y) in self.__safe_tiles):
+                    self.__wump_node = (x,y-1)
+                    return True
+                elif((x, y-1) in self.__safe_tiles):
+                    self.__wump_node = (x-1,y)
+                    return True
+        if (x+1<=self.__x_border and y+1<=self.__y_border): #rightup
+            rightup = (x+1,y+1)
+            if rightup in self.__stench_nodes: 
+                if((x+1, y) in self.__safe_tiles):
+                    self.__wump_node = (x,y+1)
+                    return True
+                elif((x, y+1) in self.__safe_tiles):
+                    self.__wump_node = (x+1,y)
+                    return True
+        if (x+1<=self.__x_border and y-1>=1): #rightdown
+            rightdown = (x+1,y-1)
+            if rightdown in self.__stench_nodes: 
+                if((x+1, y) in self.__safe_tiles):
+                    self.__wump_node = (x,y-1)
+                    return True
+                elif((x, y-1) in self.__safe_tiles):
+                    self.__wump_node = (x+1,y)
+                    return True
+        
+        return False
 
                 
     def __UpdateSafeTiles(self):
