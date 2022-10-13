@@ -98,6 +98,11 @@ class World():
             if wait_flag:
                 time.sleep(0.5)
                 continue
+            # screen.fill((0, 0, 0))
+            show_msg_up(str(self.__score), screen)
+            show_percept(self.__board[self.__agentX][self.__agentY], self.__scream, screen)
+            print(self.__scream)
+            
             refresh_graphics(self.__board, self.__agentDir, show_board, screen)
             self.__board[self.__agentX][self.__agentY].agent = False
             if self.__debug or self.__manualAI:

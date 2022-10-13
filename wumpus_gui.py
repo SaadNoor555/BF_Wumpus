@@ -1,4 +1,6 @@
+from xmlrpc.client import Boolean
 import pygame
+import sys
 
 B_R, B_C = 10, 10
 SQUARE_LEN = 60
@@ -17,12 +19,71 @@ RADIUS = 0.45*SQUARE_LEN
 def board_graphics_init():
     pygame.init()
     board_width = B_R * SQUARE_LEN
-    board_height = (B_C+1) * SQUARE_LEN
+    board_height = (B_C+2) * SQUARE_LEN
     screen = pygame.display.set_mode((board_width, board_height))
     return screen
 
+def show_msg_up(txt, screen, color=WHITE):
+    pygame.draw.rect(screen, BLACK, (0, 0, B_C*SQUARE_LEN, 2*SQUARE_LEN))
+    font = pygame.font.SysFont('Verdana', 50)
+    text = font.render(txt, True, (color))
+    text_rect = text.get_rect(center=(B_C*SQUARE_LEN//2, SQUARE_LEN//2))
+    screen.blit(text, text_rect)
+    pygame.display.update()
+
+def show_msg_down(txt, screen, color=WHITE):
+    # pygame.draw.rect(screen, BLACK, (0, 0, B_C*SQUARE_LEN, 2*SQUARE_LEN))
+    font = pygame.font.SysFont('Verdana', 40)
+    text = font.render(txt, True, (color))
+    text_rect = text.get_rect(center=(B_C*SQUARE_LEN//2, SQUARE_LEN//2+SQUARE_LEN))
+    screen.blit(text, text_rect)
+    pygame.display.update()
+
+def show_percept(tile, scream, screen):
+    # print('percept', scream)
+    pos = 0
+
+    icon_size = (SQUARE_LEN-30, SQUARE_LEN-30)
+
+    dead_wump_img = pygame.image.load('icons/dead_wumpus.png')
+    dead_wump_img = pygame.transform.scale(dead_wump_img, icon_size)
+
+    gold_img = pygame.image.load('icons/gold.png')
+    gold_img = pygame.transform.scale(gold_img, icon_size)
+
+    breeze_img = pygame.image.load('icons/breeze.png')
+    breeze_img = pygame.transform.scale(breeze_img, icon_size)
+
+    stench_img = pygame.image.load('icons/stench.png')
+    stench_img = pygame.transform.scale(stench_img, icon_size)
+
+    per = 0
+    if tile.stench: per+=1
+    if tile.breeze: per+=1
+    if tile.gold:   per+=1
+    # if scream: per+=1
+
+    pos = -1*per//2
+    if tile.stench: 
+        pygame.draw.rect(screen, WHITE, (B_C*SQUARE_LEN//2+(35*pos), SQUARE_LEN//2+40, 30, 30))
+        screen.blit(stench_img, (B_C*SQUARE_LEN//2+(35*pos), SQUARE_LEN//2+40))
+        pos+=1
+    if tile.breeze: 
+        screen.blit(breeze_img, (B_C*SQUARE_LEN//2+(35*pos), SQUARE_LEN//2+40))
+        pos+=1
+    if tile.gold:   
+        screen.blit(gold_img, (B_C*SQUARE_LEN//2+(35*pos), SQUARE_LEN//2+40))
+        pos+=1
+    if scream:
+        screen.blit(dead_wump_img, (B_C*SQUARE_LEN//2+(35*pos), SQUARE_LEN//2+40))
+        pos+=1
+
+    pygame.display.update()
+
+
+
 def refresh_graphics(board, dir, show_board, screen):
-    screen.fill((0, 0, 0))
+    # screen.fill((0, 0, 0))
     for c in range(B_C):
         board[c], board[B_C-c-1] = board[B_C-c-1], board[c]
     ''' Icons '''
@@ -62,7 +123,7 @@ def refresh_graphics(board, dir, show_board, screen):
 
     for col in range(B_C):
         for row in range(B_R):
-            pos = (col*SQUARE_LEN, B_R*SQUARE_LEN - row*SQUARE_LEN)
+            pos = (col*SQUARE_LEN, B_R*SQUARE_LEN - row*SQUARE_LEN+SQUARE_LEN)
             screen.blit(bg_img, pos)
             
             if board[col][row].agent:
@@ -105,7 +166,7 @@ def menu_gui(screen):
     text_rect = text.get_rect(center=(B_C*SQUARE_LEN//2, B_R*SQUARE_LEN//3+80))
     screen.blit(text, text_rect)
 
-    text = font.render('Settings', True, (WHITE))
+    text = font.render('Exit', True, (WHITE))
     text_rect = text.get_rect(center=(B_C*SQUARE_LEN//2, B_R*SQUARE_LEN//3+160))
     screen.blit(text, text_rect)
 
