@@ -162,28 +162,41 @@ class World():
                         for x in range (self.__agentX, self.__colDimension):
                                 if self.__board[x][self.__agentY].wumpus:
                                     self.__board[x][self.__agentY].wumpus = False
-                                    self.__board[x][self.__agentY].stench = True
+                                    self.__board[x-1][self.__agentY].stench = False
+                                    self.__board[x+1][self.__agentY].stench = False
+                                    self.__board[x][self.__agentY+1].stench = False
+                                    self.__board[x][self.__agentY-1].stench = False
                                     self.__scream = True
+                                    
                     
                     elif self.__agentDir == 1:
                         for y in range (self.__agentY, -1, -1):
                             if self.__board[self.__agentX][y].wumpus:
-                                self.__board[self.__agentX][y].wumpus = False
-                                self.__board[self.__agentX][y].stench = True
+                                self.__board[x][self.__agentY].wumpus = False
+                                self.__board[x-1][self.__agentY].stench = False
+                                self.__board[x+1][self.__agentY].stench = False
+                                self.__board[x][self.__agentY+1].stench = False
+                                self.__board[x][self.__agentY-1].stench = False
                                 self.__scream = True
                     
                     elif self.__agentDir == 2:
                         for x in range (self.__agentX, -1, -1):
                             if self.__board[x][self.__agentY].wumpus:
                                 self.__board[x][self.__agentY].wumpus = False
-                                self.__board[x][self.__agentY].stench = True
+                                self.__board[x-1][self.__agentY].stench = False
+                                self.__board[x+1][self.__agentY].stench = False
+                                self.__board[x][self.__agentY+1].stench = False
+                                self.__board[x][self.__agentY-1].stench = False
                                 self.__scream = True
 
                     elif self.__agentDir == 3:
                         for y in range (self.__agentY, self.__rowDimension):
                             if self.__board[self.__agentX][y].wumpus:
-                                self.__board[self.__agentX][y].wumpus = False
-                                self.__board[self.__agentX][y].stench = True
+                                self.__board[x][self.__agentY].wumpus = False
+                                self.__board[x-1][self.__agentY].stench = False
+                                self.__board[x+1][self.__agentY].stench = False
+                                self.__board[x][self.__agentY+1].stench = False
+                                self.__board[x][self.__agentY-1].stench = False
                                 self.__scream = True
                     
             elif self.__lastAction == Agent.Action.GRAB:
@@ -234,7 +247,7 @@ class World():
             # Generate pits
             for r in range (self.__rowDimension):
                 for c in range (self.__colDimension):
-                    if (c != 0 or r != 0) and self.__randomInt(15) < 2 and (self.__board[c][r].wumpus == False) and (self.__board[c][r].gold == False):
+                    if (c != 0 or r != 0) and self.__randomInt(30) < 2 and (self.__board[c][r].wumpus == False) and (self.__board[c][r].gold == False):
                         self.__addPit ( c, r )
 
         else:

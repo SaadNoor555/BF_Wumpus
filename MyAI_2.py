@@ -350,7 +350,43 @@ class MyAI ( Agent ):
         size = len(possiblenodes)
         rand = randomInt(size)
         # print(possiblenodes[rand])
-        return possiblenodes[rand]
+        risk = 100000
+        index = 0
+        for i in range(len(possiblenodes)):
+            sidenode = self.Node(possiblenodes[i][0], possiblenodes[i][1])
+            temp = self.getbestpos(sidenode)
+            print("temp risk : " , temp)
+            if(temp<risk):
+                risk = temp
+                index = i
+        
+        return possiblenodes[index]
+            
+    def getbestpos(self, gnode):
+        risk = 0
+        sidenode = gnode.getEast()
+        if sidenode[0]<=self.__x_border:  #Right
+            risk += self.calcRisk(sidenode)
+        sidenode = gnode.getNorth()
+        if sidenode[1]<=self.__y_border:
+            risk+=self.calcRisk(sidenode)
+        sidenode = gnode.getSouth()
+        if sidenode[1]>=1:
+            risk+=self.calcRisk(sidenode)
+        sidenode = gnode.getWest()
+        if sidenode[0]>=1:
+            risk+=self.calcRisk(sidenode)
+        return risk
+        
+    def calcRisk(self, sidenode):
+        risk = 0
+        if sidenode in self.__potential_pit_nodes:
+            risk += 50
+        if sidenode in self.__potential_wump_nodes:
+            risk += 100
+        if sidenode in self.__safe_tiles:
+            risk -=1000
+        return risk
             
 
     def __Update_Potential_Pit_Locations(self):
@@ -414,10 +450,12 @@ class MyAI ( Agent ):
             else:
                 self.__potential_wump_nodes.append(node)
         if self.__found_wump and not self.__pitless_wump:
-            for node in self.__stench_nodes:
-                if node not in self.__breeze_nodes:
-                    self.__pitless_wump = True
-                    break
+            # for node in self.__stench_nodes:
+            #     if node not in self.__breeze_nodes:
+            #         self.__pitless_wump = True
+            #         break
+            self.__pitless_wump = True
+
                 
     def __UpdateSafeTiles(self):
         if (self.__x_tile,self.__y_tile) not in self.__safe_tiles:
