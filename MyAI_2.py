@@ -235,14 +235,14 @@ class MyAI ( Agent ):
                 self.__isInLoop = True
                 self.__revert_home = False
                 gotnode = self.getloopbreakingnode(stench, breeze, glitter, bump, scream)
-                return self.__go_to_dest(stench, breeze, glitter, bump, scream, gotnode[0], gotnode[1])
+                return self.__go_to_dest(stench, breeze, glitter, bump, scream, gotnode[0], gotnode[1], True)
 
             else:
                 destination = (1,1)
-                return self.__go_to_dest( stench, breeze, glitter, bump, scream, 1,1)
+                return self.__go_to_dest( stench, breeze, glitter, bump, scream, 1,1, True)
         elif self.__isInLoop == True: 
             gotnode = self.getloopbreakingnode(stench, breeze, glitter, bump, scream)
-            return self.__go_to_dest(stench, breeze, glitter, bump, scream, gotnode[0], gotnode[1])
+            return self.__go_to_dest(stench, breeze, glitter, bump, scream, gotnode[0], gotnode[1], False)
 
 
         if self.__dest_node[0] == self.__x_tile and self.__dest_node[1] == self.__y_tile:
@@ -263,13 +263,23 @@ class MyAI ( Agent ):
             return self.__NodeToNode(nextNode,curNode)
 
 
-    def __go_to_dest(self,stench, breeze, glitter, bump, scream, destx, desty):
+    def __go_to_dest(self,stench, breeze, glitter, bump, scream, destx, desty, first_time):
+        if (first_time == True):
+            self.__dest_node = (destx, desty)
         if len(self.__path_home) == 0:
-            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,destx,desty)
+            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,self.__dest_node[0],self.__dest_node[1])
             self.__stop_iteration = False
-        elif self.__x_tile == 1 and self.__y_tile == 1:
+        elif self.__x_tile == 1 and self.__y_tile == 1 and self.__revert_home == True:
             self.__move_history.append("CLIMB")
             return Agent.Action.CLIMB
+        elif self.__x_tile == destx and self.__y_tile == desty and self.__isInLoop == True:
+            self.__isInLoop == False
+            self.__dest_node = (destx + (self.__dir_to_coordinate(self.__dir)[0]),
+                                desty + (self.__dir_to_coordinate(self.__dir)[1]))
+            curNode = self.Node(self.__x_tile,self.__y_tile)
+            nextNode = self.Node(self.__dest_node[0], self.__dest_node[1])
+            self.__print_debug_info(stench, breeze, glitter, bump, scream)
+            return self.__NodeToNode(nextNode,curNode)
         curNode = self.Node(self.__x_tile,self.__y_tile)
         index = 0
         for i in range(len(self.__path_home)):
@@ -279,15 +289,23 @@ class MyAI ( Agent ):
         try:
             nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
         except:
-            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,destx,desty)
+            self.__path_home = self.__optimal_home_path(self.__x_tile,self.__y_tile,self.__dest_node[0],self.__dest_node[1])
             self.__stop_iteration = False
             curNode = self.Node(self.__x_tile,self.__y_tile)
-            index = 0
-            for i in range(len(self.__path_home)):
-                if self.__path_home[i] == curNode.getCurrent():
-                    index = i
-                    break
-            nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
+            if(len(self.__path_home)>1):
+                index = 0
+                for i in range(len(self.__path_home)):
+                    if self.__path_home[i] == curNode.getCurrent():
+                        index = i
+                        break
+                nextNode = self.Node(self.__path_home[i+1][0],self.__path_home[i+1][1])
+            else: 
+                self.__dest_node = (destx + (self.__dir_to_coordinate(self.__dir)[0]),
+                                desty + (self.__dir_to_coordinate(self.__dir)[1]))
+                curNode = self.Node(self.__x_tile,self.__y_tile)
+                nextNode = self.Node(self.__dest_node[0], self.__dest_node[1])
+                
+
         self.__print_debug_info(stench, breeze, glitter, bump, scream)
         return self.__NodeToNode(nextNode,curNode)
 
