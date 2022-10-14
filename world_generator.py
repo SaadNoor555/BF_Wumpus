@@ -1,10 +1,3 @@
-# ======================================================================
-# FILE:        Generator.py
-#
-# AUTHOR:      Abdullah Younis
-#
-# DESCRIPTION: This file contains the Wumpus World Generator script. 
-# ======================================================================
 
 import sys
 import random

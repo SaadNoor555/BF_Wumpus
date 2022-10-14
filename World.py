@@ -1,13 +1,3 @@
-# ======================================================================
-# FILE:        World.py
-#
-# AUTHOR:      Abdullah Younis
-#
-# DESCRIPTION: This file contains the world class, which is responsible
-#              for everything game related.
-#
-# NOTES:       - Don't make changes to this file.
-# ======================================================================
 
 from xml.dom import NotFoundErr
 from Agent import Agent
@@ -111,7 +101,7 @@ class World():
                 if not self.__manualAI:
                     # Pause the game, only if manualAI isn't on
                     # because manualAI pauses for us
-                    time.sleep(0.5)
+                    time.sleep(0.1)
                     # input("Press ENTER to continue...")
                         
             # Get the move

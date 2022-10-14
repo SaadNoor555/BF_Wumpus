@@ -113,6 +113,7 @@ class MyAI ( Agent ):
             else:
                 return False
         return True
+
     def __Align_To_Wump(self,stench, breeze, glitter, bump, scream):
         curNode = self.Node(self.__x_tile,self.__y_tile)
         nextNode = self.Node(self.__wump_node[0], self.__wump_node[1])
@@ -191,6 +192,7 @@ class MyAI ( Agent ):
                     for i in self.__safe_tiles:
                         if i[1] > self.__y_border:
                             self.__safe_tiles.remove(i)
+
             if (not self.__in_danger) or (self.__in_danger and (self.__last_danger != (self.__x_tile,self.__y_tile)) or self.__dest_node not in self.__safe_tiles):
                 found_node = False
                 for i in range(len(self.__safe_tiles)):
@@ -355,7 +357,7 @@ class MyAI ( Agent ):
         for i in range(len(possiblenodes)):
             sidenode = self.Node(possiblenodes[i][0], possiblenodes[i][1])
             temp = self.getbestpos(sidenode)
-            print("temp risk : " , temp)
+            print("temp risk : " , temp, sidenode.getCurrent())
             if(temp<risk):
                 risk = temp
                 index = i
@@ -367,25 +369,29 @@ class MyAI ( Agent ):
         sidenode = gnode.getEast()
         if sidenode[0]<=self.__x_border:  #Right
             risk += self.calcRisk(sidenode)
+            print("right")
         sidenode = gnode.getNorth()
         if sidenode[1]<=self.__y_border:
             risk+=self.calcRisk(sidenode)
+            print("up")
         sidenode = gnode.getSouth()
         if sidenode[1]>=1:
             risk+=self.calcRisk(sidenode)
+            print("down")
         sidenode = gnode.getWest()
         if sidenode[0]>=1:
             risk+=self.calcRisk(sidenode)
+            print("left")
         return risk
         
     def calcRisk(self, sidenode):
         risk = 0
-        if sidenode in self.__potential_pit_nodes:
+        if sidenode in self.__breeze_nodes:
             risk += 50
-        if sidenode in self.__potential_wump_nodes:
+        if sidenode in self.__stench_nodes:
             risk += 100
         if sidenode in self.__safe_tiles:
-            risk -=1000
+            risk -=10
         return risk
             
 
